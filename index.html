@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SCALAC HPC Observatory</title>
+  <meta name="description" content="Interactive observatory of high-performance computing infrastructure in Latin America and the Caribbean, built on SCALAC usage indicators.">
+  <link rel="icon" href="https://scalac.redclara.net/images/Logos/logo_reduzido_branco.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="https://scalac.redclara.net/en/" target="_blank" rel="noopener">
+      <img src="https://scalac.redclara.net/images/Logos/logo_horizontal_branco.png" alt="SCALAC" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'brand-text',textContent:'SCALAC'}))">
+    </a>
+    <nav class="main-nav" aria-label="Sections">
+      <a href="#globe">Globe</a>
+      <a href="#countries">Countries</a>
+      <a href="#machines">Machines</a>
+      <a href="#about">About the data</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Latin America &amp; Caribbean · 2025 indicators</p>
+    <h1>HPC Observatory</h1>
+    <p class="lead">An interactive view of the high-performance computing systems reported by SCALAC member centers: where they are, how powerful they are and how they are used.</p>
+    <div class="kpis" id="kpis"></div>
+  </div>
+</section>
+
+<main>
+  <section id="globe" class="globe-section">
+    <div class="globe-layout">
+      <aside class="panel controls" aria-label="Globe controls">
+        <h2 class="panel-title">Explore</h2>
+
+        <label class="field">
+          <span>Bar height shows</span>
+          <select id="metric"></select>
+        </label>
+
+        <label class="field">
+          <span>Search</span>
+          <input id="search" type="search" placeholder="Machine, institution, city…">
+        </label>
+
+        <div class="field">
+          <span>Accelerators</span>
+          <div class="seg" id="accel">
+            <button data-v="all" class="on">All</button>
+            <button data-v="gpu">With GPU</button>
+            <button data-v="cpu">CPU only</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <span>Countries</span>
+          <div class="chips" id="countryChips"></div>
+        </div>
+
+        <div class="legend">
+          <div><i class="dot gpu"></i>GPU-accelerated system</div>
+          <div><i class="dot cpu"></i>CPU-only system</div>
+          <p class="hint">Bar height uses a square-root scale so that small and very large systems remain visible. Drag to rotate · scroll to zoom · click a bar for details.</p>
+        </div>
+        <p class="count" id="resultCount"></p>
+      </aside>
+
+      <div class="globe-wrap">
+        <div id="globeViz" role="img" aria-label="3D globe with HPC systems in Latin America"></div>
+        <div class="globe-toolbar">
+          <button id="btnReset" title="Reset view">Reset view</button>
+          <button id="btnRotate" title="Toggle auto-rotation">Auto-rotate</button>
+        </div>
+        <div class="globe-loading" id="globeLoading">Loading globe…</div>
+      </div>
+
+      <aside class="panel detail" id="detail" aria-live="polite">
+        <div class="detail-empty">
+          <h2 class="panel-title">System details</h2>
+          <p>Select a bar on the globe or a row in the table to see the indicators of a machine.</p>
+          <div id="topList"></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section id="countries" class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>By country</h2>
+        <p>Aggregated indicators of the systems reported in each country. Click a bar to filter the globe.</p>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head">
+            <h3 id="countryChartTitle">Peak performance</h3>
+            <select id="countryMetric"></select>
+          </div>
+          <div id="countryChart" class="hbars"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3>Accelerators by vendor</h3><span class="muted">GPU / accelerator packages</span></div>
+          <div id="vendorChart"></div>
+          <div class="card-head" style="margin-top:22px"><h3>Country summary</h3></div>
+          <div class="table-scroll"><table class="tbl compact" id="countryTable"></table></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="machines" class="section alt">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>All machines</h2>
+        <p>Click a column header to sort, or a row to locate the machine on the globe. Filters from the globe panel apply here too.</p>
+      </div>
+      <div class="card">
+        <div class="table-scroll"><table class="tbl" id="machineTable"></table></div>
+      </div>
+      <p class="downloads">Download the data: <a href="data/machines.json" download>machines.json</a> · <a href="IndicadoresDeUsoHPCLAC2025.csv" download>original CSV</a></p>
+    </div>
+  </section>
+
+  <section id="about" class="section">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>About the data</h2>
+        <p>Indicators collected from SCALAC HPC centers for 2025. Usage figures are core-hours reported by each site’s accounting system (typically Slurm <code>sreport</code>).</p>
+      </div>
+      <div class="defs">
+        <dl>
+          <dt>Reported</dt><dd>Total core-hours available in the period (≈ Allocated + Down + Idle + Planned).</dd>
+          <dt>Allocated</dt><dd>Core-hours allocated to user jobs.</dd>
+          <dt>Down / Planned down</dt><dd>Core-hours lost to unplanned / planned outages.</dd>
+          <dt>Idle</dt><dd>Core-hours available but not used.</dd>
+          <dt>Utilization</dt><dd><em>% use over available</em> = Allocated ÷ (Reported − Down).</dd>
+          <dt>Downtime</dt><dd><em>% down over total</em> = Down ÷ Reported.</dd>
+        </dl>
+        <dl>
+          <dt>Rpeak CPU FP64</dt><dd>Theoretical peak double-precision performance of the CPUs, in TFlop/s.</dd>
+          <dt>Rpeak GPU FP16</dt><dd>Theoretical peak half-precision performance of the accelerators, in TFlop/s (relevant for AI workloads). Not comparable with FP64.</dd>
+          <dt>Personnel</dt><dd>Staff operating the system: full-time / half-time / simple dedication.</dd>
+          <dt>Power &amp; PUE</dt><dd>Data-center maximum power (kW), Power Usage Effectiveness and measured cluster peak consumption (kW).</dd>
+          <dt>Location</dt><dd>Approximate, at city level, based on the institution’s main campus.</dd>
+          <dt>Gaps</dt><dd>Some centers could not provide accounting data; their usage indicators are shown as “n/a”.</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <img src="https://scalac.redclara.net/images/Logos/logo_horizontal_branco-500px.png" alt="SCALAC" class="footer-logo" onerror="this.style.display='none'">
+    <p>Sistema de Cómputo Avanzado para América Latina y el Caribe · Data: SCALAC HPC usage indicators 2025.</p>
+    <p class="small">Inspired by the <a href="https://hpcbrazil.github.io/" target="_blank" rel="noopener">HPC &amp; AI Observatory – Brazil</a>.</p>
+  </div>
+</footer>
+
+<div id="tooltip" class="tooltip" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/globe.gl@2.33.0/dist/globe.gl.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
