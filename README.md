@@ -1,7 +1,7 @@
 # SCALAC HPC Observatory
 
 Interactive 3D globe and dashboards of the HPC systems reported by SCALAC member centers
-(2025 usage indicators). Static site — no build step, no server-side code.
+(2025 usage indicators).
 
 ## Run locally
 
