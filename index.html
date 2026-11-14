@@ -138,12 +138,13 @@
       </div>
       <div class="defs">
         <dl>
-          <dt>Reported</dt><dd>Total core-hours available in the period (≈ Allocated + Down + Idle + Planned).</dd>
+          <dt>Reported</dt><dd>Total core-hours in the period (≈ Allocated + Down + Planned down + Idle + Planned).</dd>
           <dt>Allocated</dt><dd>Core-hours allocated to user jobs.</dd>
-          <dt>Down / Planned down</dt><dd>Core-hours lost to unplanned / planned outages.</dd>
+          <dt>Down / Planned down</dt><dd>Core-hours lost to unplanned outages / scheduled maintenance.</dd>
+          <dt>Planned</dt><dd>Slurm “Planned”: core-hours during which eligible jobs were waiting in the queue but could not start (size or time limits). It reflects queued demand, not maintenance.</dd>
           <dt>Idle</dt><dd>Core-hours available but not used.</dd>
-          <dt>Utilization</dt><dd><em>% use over available</em> = Allocated ÷ (Reported − Down).</dd>
-          <dt>Downtime</dt><dd><em>% down over total</em> = Down ÷ Reported.</dd>
+          <dt>Utilization</dt><dd><em>% use over available</em> = Allocated ÷ (Reported − Down − Planned down).</dd>
+          <dt>Downtime</dt><dd><em>% down over total</em> = (Down + Planned down) ÷ Reported.</dd>
         </dl>
         <dl>
           <dt>Rpeak CPU FP64</dt><dd>Theoretical peak double-precision performance of the CPUs, in TFlop/s.</dd>

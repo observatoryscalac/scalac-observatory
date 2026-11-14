@@ -25,7 +25,7 @@
   // agg: how to combine several machines (sum or utilization weighted by core-hours)
   const utilAgg = (ms) => {
     let a = 0, d = 0;
-    ms.forEach((m) => { const u = m.usage; if (isNum(u.allocated) && isNum(u.reported)) { a += u.allocated; d += u.reported - (u.down || 0); } });
+    ms.forEach((m) => { const u = m.usage; if (isNum(u.allocated) && isNum(u.reported)) { a += u.allocated; d += u.reported - (u.down || 0) - (u.plannedDown || 0); } });
     return d > 0 ? (100 * a) / d : null;
   };
   const sum = (key) => (ms) => ms.reduce((s, m) => s + (isNum(key(m)) ? key(m) : 0), 0);
@@ -241,11 +241,12 @@
       return;
     }
     const u = m.usage, gpu = hasGpu(m);
-    const stat = (v, l, unit = "") => `<div class="d-stat"><div class="v">${v}${unit ? `<small>${unit}</small>` : ""}</div><div class="l">${l}</div></div>`;
+    const stat = (v, l, unit = "", sub = "") => `<div class="d-stat"><div class="v">${v}${unit ? `<small>${unit}</small>` : ""}</div><div class="l">${l}</div>${sub ? `<div class="s">${sub}</div>` : ""}</div>`;
+    const plannedPct = isNum(u.planned) && u.planned > 0 && isNum(u.reported) && u.reported > 0 ? (100 * u.planned) / u.reported : null;
     const list = (arr) => arr.length ? `<ul class="d-list">${arr.map((x) => `<li><span>${esc(x.name)}</span><b>× ${nf0.format(x.count)}</b></li>`).join("")}</ul>` : `<p class="muted" style="color:#8f9bc6">—</p>`;
     let usage = `<p style="color:#8f9bc6;font-size:.85rem;margin:0">No accounting data reported.</p>`;
     if (isNum(u.reported) && u.reported > 0) {
-      const segs = [["Allocated", u.allocated, COLORS.blue], ["Idle", u.idle, "#5d6aa8"], ["Planned", u.planned, COLORS.gold], ["Down", u.down, "#e05a5a"]].filter((s) => isNum(s[1]) && s[1] > 0);
+      const segs = [["Allocated", u.allocated, COLORS.blue], ["Idle", u.idle, "#5d6aa8"], ["Planned (queued)", u.planned, COLORS.gold], ["Planned down", u.plannedDown, "#a35fd0"], ["Down", u.down, "#e05a5a"]].filter((s) => isNum(s[1]) && s[1] > 0);
       const tot = segs.reduce((s, x) => s + x[1], 0) || 1;
       usage = `<div class="stack">${segs.map(([l, v, c]) => `<span style="width:${(100 * v) / tot}%;background:${c}" title="${l}: ${nf0.format(v)} core-hours"></span>`).join("")}</div>
         <div class="stack-legend">${segs.map(([l, v, c]) => `<span><i style="background:${c}"></i>${l} ${nf1.format((100 * v) / tot)}%</span>`).join("")}</div>
@@ -261,7 +262,7 @@
       <div class="d-grid">
         ${stat(fmtTF(m.rpeakCpuFp64), "Rpeak CPU FP64")}
         ${stat(fmtTF(m.rpeakGpuFp16), "Rpeak GPU FP16")}
-        ${stat(fmtPct(u.pctUse), "Utilization")}
+        ${stat(fmtPct(u.pctUse), "Utilization", "", plannedPct !== null ? `<span title="Core-hours with eligible jobs waiting in the queue (Slurm &quot;Planned&quot;): queued demand, not maintenance">+ ${nf1.format(plannedPct)}% planned (queued jobs)</span>` : "")}
         ${stat(fmtPct(u.pctDown), "Downtime")}
         ${stat(isNum(m.activeUsers) ? nf0.format(m.activeUsers) : "n/a", "Active users")}
         ${stat(`${m.personnel.full}/${m.personnel.half}/${m.personnel.simple}`, "Staff (full/half/simple)")}

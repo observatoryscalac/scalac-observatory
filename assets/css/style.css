@@ -157,6 +157,7 @@ select:focus, input:focus, button:focus-visible { outline: 2px solid var(--gold)
 .d-stat .v { font-size: 1.15rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 .d-stat .v small { font-size: .72rem; color: #aab6e0; font-weight: 500; margin-left: 2px; }
 .d-stat .l { font-size: .72rem; color: #aab6e0; }
+.d-stat .s { font-size: .7rem; color: #e6b25c; margin-top: 3px; }
 .d-sec { font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: #aab6e0; margin: 18px 0 8px; font-weight: 600; }
 .stack { display: flex; height: 14px; border-radius: 7px; overflow: hidden; background: rgba(255,255,255,.08); gap: 2px; }
 .stack span { display: block; height: 100%; }

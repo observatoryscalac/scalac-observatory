@@ -2381,12 +2381,12 @@
    "usage": {
     "allocated": 90283794,
     "down": 2780909,
-    "plannedDown": 16061148,
+    "plannedDown": 24695,
     "idle": 4702903,
     "planned": 16061148,
     "reported": 113853449,
-    "pctDown": 16.6,
-    "pctUse": 95
+    "pctDown": 2.5,
+    "pctUse": 81.3
    },
    "usageNote": null,
    "activeUsers": 367,
@@ -2420,15 +2420,11 @@
      "count": 2
     },
     {
-     "name": "Dell EMC PowerEdge R840",
-     "count": 2
-    },
-    {
      "name": "HP ProLiant DL380p Gen8",
      "count": 2
     }
    ],
-   "nodeCount": 94,
+   "nodeCount": 92,
    "cpus": [
     {
      "name": "EPYC 9754",
@@ -2441,10 +2437,6 @@
     {
      "name": "Xeon Gold 6152",
      "count": 118
-    },
-    {
-     "name": "Xeon Gold 6154",
-     "count": 8
     },
     {
      "name": "Xeon E5-2660 v2",
@@ -2461,9 +2453,9 @@
      "count": 12
     }
    ],
-   "cpuCount": 192,
+   "cpuCount": 184,
    "gpuCount": 16,
-   "rpeakCpuFp64": 383.19,
+   "rpeakCpuFp64": 431.67,
    "rpeakGpuFp16": 2620
   },
   {
